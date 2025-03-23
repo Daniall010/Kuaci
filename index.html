@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Utama - Hadiah Diamond</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298, #1e3c72);
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 50px 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .title {
+            font-size: 36px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+            text-shadow: 0px 0px 10px rgba(255, 255, 255, 0.7);
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .button {
+            padding: 15px 40px;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(90deg, #ff9800, #ff5722);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s ease-in-out;
+            width: 280px;
+            text-transform: uppercase;
+            box-shadow: 0px 4px 10px rgba(255, 87, 34, 0.6);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: 0.4s;
+        }
+
+        .button:hover::before {
+            left: 100%;
+        }
+
+        .button:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 6px 15px rgba(255, 87, 34, 0.9);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <h1 class="title">🎁 Pilih Jenis Undian 🎁</h1>
+    <div class="container">
+        <button class="button" onclick="bukaHalaman('1000.html')">Undian 1000</button>
+        <button class="button" onclick="bukaHalaman('2000.html')">Undian 2000</button>
+        <button class="button" onclick="bukaHalaman('5000.html')">Undian 5000</button>
+        <button class="button" onclick="bukaHalaman('10000.html')">Undian 10000</button>
+    </div>
+
+    <script>
+        function bukaHalaman(namaFile) {
+            window.location.href = namaFile;
+        }
+    </script>
+</body>
+</html>

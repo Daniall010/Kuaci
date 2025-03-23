@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <audio id="openSound" src="open-box.mp3"></audio>
+    <audio id="winSound" src="win.mp3"></audio>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1000</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(45deg, #1e3c72, #2a5298);
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        @keyframes floating {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+
+        .box.selected {
+            border: 2px solid yellow;
+            animation: floating 1s infinite ease-in-out;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(10, 60px);
+            gap: 10px;
+            justify-content: center;
+            padding: 20px;
+        }
+        .box {
+            width: 60px;
+            height: 60px;
+            background: url('kado.png') no-repeat center center / cover;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .box.opened {
+            background: transparent;
+            cursor: default;
+        }
+        .box.selected {
+            border: 2px solid yellow;
+            transform: scale(1.1);
+        }
+        .button-container {
+            position: fixed;
+            bottom: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background: #ff5722;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 20px;
+            opacity: 0;
+            transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+        }
+
+        .popup.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="title">🎁 Hadiah Sampai 500 Diamond 🎁</h1>
+    <div class="container" id="boxContainer"></div>
+    <div class="button-container">
+        <button class="button" onclick="openSelectedBox()">Buka Kotak</button>
+        <button class="button" onclick="resetGame()">Reset</button>
+    </div>
+
+    <script>
+        const container = document.getElementById("boxContainer");
+        let selectedBox = null;
+        let totalBoxes = 2000;
+        let openedBoxes = new Set();
+        let hadiahDistribution = Array(totalBoxes).fill("Zonk");
+
+        let hadiahList = [
+            { hadiah: "500 Diamond", jumlah: 1 },
+            { hadiah: "330 Diamond", jumlah: 3 },
+            { hadiah: "210 Diamond", jumlah: 5 },
+            { hadiah: "140 Diamond", jumlah: 8 },
+            { hadiah: "100 Diamond", jumlah: 10 },
+            { hadiah: "70 Diamond", jumlah: 20 },
+            { hadiah: "50 Diamond", jumlah: 30 },
+            { hadiah: "20 Diamond", jumlah: 100 }
+        ];
+
+        function generateBoxes() {
+            for (let i = 0; i < totalBoxes; i++) {
+                const box = document.createElement("div");
+                box.className = "box";
+                box.dataset.index = i;
+                box.onclick = () => selectBox(box);
+                container.appendChild(box);
+            }
+        }
+
+        function selectBox(box) {
+            if (box.classList.contains("opened")) return;
+            if (selectedBox) selectedBox.classList.remove("selected");
+            selectedBox = box;
+            box.classList.add("selected");
+        }
+
+        function distributeHadiah() {
+            if (localStorage.getItem("hadiahDistribution")) {
+                hadiahDistribution = JSON.parse(localStorage.getItem("hadiahDistribution"));
+                return;
+            }
+
+            let allHadiah = hadiahList.flatMap(h => Array(h.jumlah).fill(h.hadiah));
+            allHadiah.sort(() => Math.random() - 0.5);
+            hadiahDistribution.splice(0, allHadiah.length, ...allHadiah);
+
+            localStorage.setItem("hadiahDistribution", JSON.stringify(hadiahDistribution));
+        }
+
+        let hadiahLuckyNumbers = {
+            "20 Diamond": [11, 14, 27, 32, 88, 101, 190, 194, 221, 289, 309, 310, 313, 316, 318, 331, 362, 431, 434, 444, 455, 490, 501, 531, 541, 566, 596, 610, 631, 654, 682, 686, 700, 703, 728, 759, 789, 836, 839, 842, 852, 858, 909, 941, 944, 947, 951, 959, 986, 1006, 1056, 1078, 1127, 1161, 1189, 1217, 1223, 1238, 1263, 1283, 1284, 1303, 1324, 1341, 1348, 1357, 1366, 1368, 1373, 1385, 1388, 1399, 1400, 1420, 1433, 1449, 1452, 1454, 1456, 1512, 1514, 1515, 1578, 1586, 1592, 1608, 1627, 1682, 1695, 1720, 1725, 1733, 1744, 1775, 1857, 1887, 1897, 1927, 1940, 1988],
+            "50 Diamond": [22, 80, 96, 111, 140, 229, 301, 319, 397, 421, 521, 590, 639, 677, 800, 814, 885, 926, 991, 1023, 1055, 1074, 1108, 1219, 1261, 1310, 1573, 1734, 1908, 1989],
+            "70 Diamond": [439, 635, 828, 887, 901, 913, 918, 923, 957, 995, 1028, 1032, 1081, 1345, 1407, 1699, 1910, 1931, 1955, 1964],
+            "100 Diamond": [595, 662, 844, 996, 1251, 1336, 1533, 1545, 1561, 1642],
+            "140 Diamond": [525, 638, 712, 855, 897, 1052, 1110, 1766],
+            "210 Diamond": [1084, 1378, 1421, 1477, 1998],
+            "330 Diamond": [1571, 1629, 1773],
+            "500 Diamond": [2000]
+        };
+
+        function getHadiahByOpenedCount(openedCount) {
+            for (let hadiah in hadiahLuckyNumbers) {
+                if (hadiahLuckyNumbers[hadiah].includes(openedCount)) {
+                    return hadiah;
+                }
+            }
+            return "Zonk";
+        }
+
+        function openSelectedBox() {
+            if (!selectedBox) return alert("Pilih kotak terlebih dahulu!");
+
+            let index = selectedBox.dataset.index;
+            if (openedBoxes.has(index)) return;
+
+            openedBoxes.add(index);
+            let openedCount = openedBoxes.size;
+            let hadiah = openedCount === totalBoxes ? "500 Diamond" : getHadiahByOpenedCount(openedCount);
+
+            document.getElementById("openSound").play();
+            if (hadiah === "330 Diamond" || hadiah === "500 Diamond") document.getElementById("winSound").play();
+
+            selectedBox.classList.add("opened");
+            selectedBox.style.background = "transparent";
+            selectedBox.classList.remove("selected");
+
+            showPopup(hadiah);
+            saveGameState();
+
+            selectedBox = null;
+        }
+
+
+        function showPopup(hadiah) {
+            let popup = document.createElement("div");
+            popup.className = "popup show";
+            popup.innerHTML = `<p>🎉 Anda mendapatkan ${hadiah}! 🎉</p>
+                               <button class="button" onclick="this.parentElement.remove()">Tutup</button>`;
+            document.body.appendChild(popup);
+        }
+
+        function saveGameState() {
+            localStorage.setItem("openedBoxes", JSON.stringify([...openedBoxes]));
+            localStorage.setItem("hadiahDistribution", JSON.stringify(hadiahDistribution));
+        }
+
+        function loadGameState() {
+            if (localStorage.getItem("openedBoxes")) {
+                openedBoxes = new Set(JSON.parse(localStorage.getItem("openedBoxes")));
+                hadiahDistribution = JSON.parse(localStorage.getItem("hadiahDistribution")) || hadiahDistribution;
+
+                openedBoxes.forEach(index => {
+                    let box = container.children[index];
+                    box.classList.add("opened");
+                    box.style.background = "transparent";
+                });
+            } else {
+                distributeHadiah();
+            }
+        }
+
+        function resetGame() {
+            localStorage.clear();
+            location.reload();
+        }
+
+        generateBoxes();
+        loadGameState();
+    </script>
+</body>
+</html>
